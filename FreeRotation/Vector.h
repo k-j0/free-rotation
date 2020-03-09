@@ -32,18 +32,37 @@ public:
 	}// constructor
 
 	/// General getter
-	inline T operator[](const int& i) const { assert(N > i); return components[i]; }
+	inline T get(const int& i) const { assert(N > i); return components[i]; }
+	inline T operator[](const int& i) const { return get(i); }
 
 	/// Getters for standard components x, y, z
-	inline T X() const { assert(N > 0); return components[0]; }
-	inline T Y() const { assert(N > 1); return components[1]; }
-	inline T Z() const { assert(N > 2); return components[2]; }
+	inline T X() const { return get(0); }
+	inline T Y() const { return get(1); }
+	inline T Z() const { return get(2); }
 
 	/// Setter for inidividual values
 	inline void set(const int& position, const T& val) {
 		assert(N > position);
 		components[position] = val;
 	}// void set()
+
+	/// Component-wise addition
+	inline Vec<T, N> operator+(const Vec<T, N>& v) const {
+		Vec<T, N> ret;
+		for (int i = 0; i < N; ++i) {
+			ret.set(i, v[i] + get(i));
+		}
+		return ret;
+	}// operator+
+
+	/// Component-wise product
+	inline Vec<T, N> operator*(const double& f) const {
+		Vec<T, N> ret;
+		for (int i = 0; i < N; ++i) {
+			ret.set(i, get(i) * f);
+		}
+		return ret;
+	}// operator*
 
 	/// String conversion for debugging purposes
 	inline std::string toString() const {

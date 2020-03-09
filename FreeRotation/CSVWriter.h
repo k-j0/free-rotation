@@ -29,7 +29,7 @@ public:
 		// insert the value
 		columns.back()->cells.push_back(val);
 		// keep track of the largest column:
-		maxColumnHeight = maxColumnHeight < columns.back()->cells.size() ? columns.back()->cells.size() : maxColumnHeight;
+		maxColumnHeight = maxColumnHeight < (int)columns.back()->cells.size() ? (int)columns.back()->cells.size() : maxColumnHeight;
 	}// void insert()
 
 	/// Inserts a double value in the current column

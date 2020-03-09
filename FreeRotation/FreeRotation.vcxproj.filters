@@ -20,13 +20,13 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="RungeKutta.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Vector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CSVWriter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NumericalMethods.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
