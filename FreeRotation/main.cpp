@@ -12,6 +12,7 @@
 /// Vector & matrix types used
 typedef Vec<double, 3> Vec3; // 3-component Vector
 typedef Vec<double, 3> DiagMat3; // Diagonal 3x3 Matrix; synonym for a Vec3.
+typedef Mat<double, 3, 3> Mat3; // 3x3 square matrix
 
 
 
@@ -44,14 +45,17 @@ const double h = 0.05; // step size
 
 
 /// Inserts the data into the csv file
-void insertData(CSVWriter& csv, const double& time, const Vec3& velocity, const Vec3& position, const Vec3& angularVelocity) {
+void insertData(CSVWriter& csv, const double& time, const Vec3& velocity, const Vec3& positionCM, const Vec3& angularVelocity, const Vec3& positionP) {
 	csv.nextColumn();
 	csv.insert(time); // time
-	csv.insert(velocity.Z()); // velocity (only writing vertical component)
-	csv.insert(position.Z()); // position (only writing vertical component)
+	csv.insert(velocity.Z()); // velocity of centre of mass (only writing vertical component)
+	csv.insert(positionCM.Z()); // position of centre of mass (only writing vertical component)
 	csv.insert(angularVelocity.X()); // angular velocity
 	csv.insert(angularVelocity.Y());
 	csv.insert(angularVelocity.Z());
+	csv.insert(positionP.X());
+	csv.insert(positionP.Y());
+	csv.insert(positionP.Z());
 }// void insertData
 
 
@@ -66,15 +70,19 @@ int main() {
 	csv.insert("omega x");
 	csv.insert("omega y");
 	csv.insert("omega z");
+	csv.insert("P x");
+	csv.insert("P y");
+	csv.insert("P z");
 
-	// initial position of centre of mass, velocity and angular velocity
+	// initial conditions
 	Vec3 pos = Position;
 	Vec3 v = Velocity;
 	Vec3 ω = AngularVelocity;
-	Vec3 a = Vec3(0.0, 0.0, -g); // constant acceleration
+	Vec3 a(0.0, 0.0, -g); // constant acceleration
+	Vec3 r_local(0.0, 3.0/4.0 * Radius, 0.0);// position of point P within the cone
 
 	// write initial conditions for t = 0 to csv
-	insertData(csv, 0, v, pos, ω);
+	insertData(csv, 0, v, pos, ω, pos + r_local);
 
 	// inertia tensor for the shape
 	const DiagMat3 I = InertiaTensor;
@@ -95,9 +103,9 @@ int main() {
 		double t = double(n) * h + t_0; // current time
 
 		// Semi-Implicit Euler method for position and velocity
-		std::tuple<Vec3, Vec3> r = SemiImplicitEuler(t, h, a, v, pos);
-		v = std::get<0>(r);
-		pos = std::get<1>(r);
+		std::tuple<Vec3, Vec3> eulerResult = SemiImplicitEuler(t, h, a, v, pos);
+		v = std::get<0>(eulerResult);
+		pos = std::get<1>(eulerResult);
 
 		// 4th-order Runge-Kutta method on Euler's equations
 		Vec3 nextΩ (
@@ -107,8 +115,15 @@ int main() {
 		);
 		ω = nextΩ;
 
+		// Find next position of P
+		double Δθ = sqrt(ω.lengthSqr());
+		Vec3 axis = ω.normalized();
+		Mat3 Λ = RotationMatrix3(axis, Δθ);// rotation matrix from previous rotation to current rotation
+		r_local = Mult<double, Mat3, 3, 3, Vec3, 3>(Λ, r_local);// get position of P relative to the cone's CM
+		Vec3 r_global = pos + r_local;// add to the center of mass to get position of P in world space.
+
 		// Write results to the csv file
-		insertData(csv, t, v, pos, ω);
+		insertData(csv, t, v, pos, ω, r_global);
 
 	}// iterative loop
 

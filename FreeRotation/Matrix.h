@@ -73,3 +73,19 @@ inline Mat<T, MRight, NLeft> Mult(MatLeft left, MatRight right) {
 	}
 	return result;
 }// Matrix multiplication
+
+/// Matrix multiplication with Vector
+template<typename T, typename MatLeft, int MLeft, int NLeft, typename VecRight, int NRight>
+inline Vec<T, NLeft> Mult(MatLeft left, VecRight right) {
+	assert(MLeft == NRight);
+	Vec<T, NLeft> result;
+	for (int row = 0; row < NLeft; ++row) {
+		T val = 0;
+		// add up the dot products of the matrix's rows and the vector.
+		for (int index = 0; index < MLeft; ++index) {
+			val += left.get(index, row) * right.get(index);
+		}
+		result.set(row, val);
+	}
+	return result;
+}// Matrix multiplication (Matrix x Vector)
