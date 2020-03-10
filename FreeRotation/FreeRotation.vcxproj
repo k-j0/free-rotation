@@ -153,6 +153,7 @@
     <ClInclude Include="CSVWriter.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="NumericalMethods.h" />
+    <ClInclude Include="Transformations.h" />
     <ClInclude Include="Vector.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

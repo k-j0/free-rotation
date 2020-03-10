@@ -46,6 +46,25 @@ public:
 		components[position] = val;
 	}// void set()
 
+	/// Vector length squared
+	inline T lengthSqr() {
+		T val = 0;
+		for (int i = 0; i < N; ++i) {
+			val += get(i) * get(i);
+		}
+		return val;
+	}// T lengthSqr()
+
+	/// Normalized vector
+	inline Vec<T, N> normalized() {
+		Vec<T, N> v;
+		T length = (T)sqrt((double)lengthSqr());
+		for (int i = 0; i < N; ++i) {
+			v.set(i, get(i) / length);
+		}
+		return v;
+	}// Vec<T, N> normalized
+
 	/// Component-wise addition
 	inline Vec<T, N> operator+(const Vec<T, N>& v) const {
 		Vec<T, N> ret;

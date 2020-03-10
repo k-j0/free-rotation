@@ -2,6 +2,7 @@
 // Includes
 #include "Vector.h"
 #include "Matrix.h"
+#include "Transformations.h"
 #include "NumericalMethods.h"
 #include "CSVWriter.h"
 #include <ctime>
