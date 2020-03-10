@@ -49,6 +49,7 @@ public:
 			stream << "\n";
 		}
 		stream.close();
+		printf("Wrote CSV file %s.\n", filename.c_str());
 
 	}// void writeToFile
 

@@ -1,9 +1,16 @@
 ﻿
 // Includes
 #include "Vector.h"
+#include "Matrix.h"
 #include "NumericalMethods.h"
 #include "CSVWriter.h"
 #include <ctime>
+
+
+
+/// Vector & matrix types used
+typedef Vec<double, 3> Vec3; // 3-component Vector
+typedef Vec<double, 3> DiagMat3; // Diagonal 3x3 Matrix; synonym for a Vec3.
 
 
 
@@ -63,13 +70,10 @@ int main() {
 	Vec3 pos = Position;
 	Vec3 v = Velocity;
 	Vec3 ω = AngularVelocity;
+	Vec3 a = Vec3(0.0, 0.0, -g); // constant acceleration
 
 	// write initial conditions for t = 0 to csv
 	insertData(csv, 0, v, pos, ω);
-
-	// velocity and acceleration equations
-	std::function<Vec3(double, Vec3)> velocity = [](double t, Vec3 v) { return v; }; // velocity as a function of position and time (constant here)
-	std::function<Vec3(double, Vec3)> acceleration = [](double t, Vec3 x_n) { return Vec3(0.0, 0.0, -g); }; // acceleration as a function of velocity and time
 
 	// inertia tensor for the shape
 	const DiagMat3 I = InertiaTensor;
@@ -90,7 +94,7 @@ int main() {
 		double t = double(n) * h + t_0; // current time
 
 		// Semi-Implicit Euler method for position and velocity
-		std::tuple<Vec3, Vec3> r = SemiImplicitEuler(t, h, v, pos, acceleration, velocity);
+		std::tuple<Vec3, Vec3> r = SemiImplicitEuler(t, h, a, v, pos);
 		v = std::get<0>(r);
 		pos = std::get<1>(r);
 

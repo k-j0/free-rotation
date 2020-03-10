@@ -75,6 +75,3 @@ public:
 	}// std::string toString()
 
 };// class Vec
-
-typedef Vec<double, 3> Vec3; // 3-component Vector
-typedef Vec<double, 3> DiagMat3; // Diagonal 3x3 Matrix; synonym for a Vec3.

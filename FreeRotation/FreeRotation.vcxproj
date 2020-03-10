@@ -147,10 +147,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="FreeRotation.cpp" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CSVWriter.h" />
+    <ClInclude Include="Matrix.h" />
     <ClInclude Include="NumericalMethods.h" />
     <ClInclude Include="Vector.h" />
   </ItemGroup>
