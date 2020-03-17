@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <tuple>
+#include <functional>
 
 
 /// 4th order Runge-Kutta method for Euler's Equations

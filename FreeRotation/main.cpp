@@ -9,7 +9,7 @@
 
 
 
-/// Vector & matrix types used
+/// Vector & matrix type definitions
 typedef Vec<double, 3> Vec3; // 3-component Vector
 typedef Vec<double, 3> DiagMat3; // Diagonal 3x3 Matrix; synonym for a Vec3.
 typedef Mat<double, 3, 3> Mat3; // 3x3 square matrix
@@ -20,38 +20,25 @@ typedef Mat<double, 3, 3> Mat3; // 3x3 square matrix
 const double g = 9.8; // newtons per kg
 
 /// Definition of the shape needed (cone)
-/*const double Mass = 10.0; // kilograms
+const double Mass = 10.0; // kilograms
 const double Radius = 1.0; // meters
 const double Height = 4.0; // meters
-#define IT_F 3.0 * Mass / 20.0 // base inertia tensor factor
 // Inertia tensor is a 3x3 diagonal matrix, represented here as a vector
-const DiagMat3 InertiaTensor(
-	IT_F * (Radius * Radius + Height * Height / 4.0),
-	IT_F * (Radius * Radius + Height * Height / 4.0),
-	IT_F * 2.0 * Radius * Radius
-);
-#undef IT_F
-*/
-const double Mass = 3.14;
-const double A = 3.0;
-const double B = 2.0;
-const double C = 1.0;
-const double Radius = 0.0;
-const DiagMat3 InertiaTensor(
-	1.0/5.0 * Mass * (B*B + C*C),
-	1.0/5.0 * Mass * (A*A + C*C),
-	1.0/5.0 * Mass * (A*A + B*B)
-);
+const DiagMat3 InertiaTensor = DiagMat3(
+	(Radius * Radius + Height * Height / 4.0),
+	(Radius * Radius + Height * Height / 4.0),
+	2.0 * Radius * Radius
+) * (3.0 * Mass / 20.0);
 
 /// Definition of the initial position, linear & angular velocity
 const Vec3 Position ( 0.0, 0.0, 0.0 ); // meters
 const Vec3 Velocity ( 0.0, 0.0, 200.0 ); // meters per second
-const Vec3 AngularVelocity(1.0, 1.0, 1.0);//( 3.0, 1.0, 2.0 ); // radians per second
+const Vec3 AngularVelocity ( 3.0, 1.0, 2.0 ); // radians per second
 
 /// Definition of the step size and time span
 const double t_0 = 0.0;
-const double t_max = 64.0;
-const double h = 0.08; // step size
+const double t_max = 20.0;
+const double h = 0.05; // step size
 
 
 
