@@ -20,7 +20,7 @@ typedef Mat<double, 3, 3> Mat3; // 3x3 square matrix
 const double g = 9.8; // newtons per kg
 
 /// Definition of the shape needed (cone)
-const double Mass = 10.0; // kilograms
+/*const double Mass = 10.0; // kilograms
 const double Radius = 1.0; // meters
 const double Height = 4.0; // meters
 #define IT_F 3.0 * Mass / 20.0 // base inertia tensor factor
@@ -31,16 +31,27 @@ const DiagMat3 InertiaTensor(
 	IT_F * 2.0 * Radius * Radius
 );
 #undef IT_F
+*/
+const double Mass = 3.14;
+const double A = 3.0;
+const double B = 2.0;
+const double C = 1.0;
+const double Radius = 0.0;
+const DiagMat3 InertiaTensor(
+	1.0/5.0 * Mass * (B*B + C*C),
+	1.0/5.0 * Mass * (A*A + C*C),
+	1.0/5.0 * Mass * (A*A + B*B)
+);
 
 /// Definition of the initial position, linear & angular velocity
 const Vec3 Position ( 0.0, 0.0, 0.0 ); // meters
 const Vec3 Velocity ( 0.0, 0.0, 200.0 ); // meters per second
-const Vec3 AngularVelocity ( 3.0, 1.0, 2.0 ); // radians per second
+const Vec3 AngularVelocity(1.0, 1.0, 1.0);//( 3.0, 1.0, 2.0 ); // radians per second
 
 /// Definition of the step size and time span
 const double t_0 = 0.0;
-const double t_max = 20.0;
-const double h = 0.05; // step size
+const double t_max = 64.0;
+const double h = 0.08; // step size
 
 
 
@@ -92,12 +103,6 @@ int main() {
 				   (I[0] - I[2]) / I[1],  // γ2 = (I_1 - I_3) / I_2
 				   (I[1] - I[0]) / I[2] );// γ3 = (I_2 - I_1) / I_3
 
-	// Euler's equations
-	std::function<double(double, double, double)> Euler = [](double ω_1, double ω_2, double γ) { return -γ * ω_1 * ω_2; };
-	std::function<double(double, double)> EulerX = [&γ, &Euler](double ω_y, double ω_z) { return Euler(γ[0], ω_y, ω_z); };
-	std::function<double(double, double)> EulerY = [&γ, &Euler](double ω_x, double ω_z) { return Euler(γ[1], ω_x, ω_z); };
-	std::function<double(double, double)> EulerZ = [&γ, &Euler](double ω_x, double ω_y) { return Euler(γ[2], ω_x, ω_y); };
-
 	// iterative loop (over an int rather than double for maximum precision)
 	for (int n = 1; n <= (t_max - t_0) / h; ++n) {
 		double t = double(n) * h + t_0; // current time
@@ -108,14 +113,9 @@ int main() {
 		pos = std::get<1>(eulerResult);
 
 		// 4th-order Runge-Kutta method on Euler's equations
-		Vec3 nextΩ (
-			RungeKutta4<double>(h, ω.Y(), ω.Z(), ω.X(), EulerX),
-			RungeKutta4<double>(h, ω.X(), ω.Z(), ω.Y(), EulerY),
-			RungeKutta4<double>(h, ω.X(), ω.Y(), ω.Z(), EulerZ)
-		);
-		ω = nextΩ;
+		ω = RungeKutta4Euler(h, γ, ω);
 
-		// Find next position of P
+		// Find next position of point P in world-space
 		double Δθ = sqrt(ω.lengthSqr());
 		Vec3 axis = ω.normalized();
 		Mat3 Λ = RotationMatrix3(axis, Δθ);// rotation matrix from previous rotation to current rotation

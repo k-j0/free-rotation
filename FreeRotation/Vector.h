@@ -74,6 +74,15 @@ public:
 		return ret;
 	}// operator+
 
+	/// Component-wise addition shorthand
+	inline Vec<T, N> operator+=(const Vec<T, N>& v) {
+		Vec<T, N> n = (*this) + v;
+		for (int i = 0; i < N; ++i) {
+			set(i, n[i]);
+		}
+		return *this;
+	}
+
 	/// Component-wise product
 	inline Vec<T, N> operator*(const double& f) const {
 		Vec<T, N> ret;

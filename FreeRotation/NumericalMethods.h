@@ -1,26 +1,36 @@
 ﻿#pragma once
 
-#include <functional>
 #include <tuple>
 
-/// 4th order Runge-Kutta method
-/// Δx: step size
-/// x_n: previous value of x
-/// y_n: previous value of y
-/// z_n: previous value of z
-/// f: differential equation dy/dx = f(x, y)
-/// returns y_(n+1) the next value of y at x_(n+1) = x_n + h = x_0 + h * n
+
+/// 4th order Runge-Kutta method for Euler's Equations
+/// Δt: step size
+/// γ: moment of inertia parameters
+/// ω: previous angular velocity
+/// Returns the new value of ω after time Δt.
 template<typename T>
-inline T RungeKutta4(const double& Δx, const T& x_n, const T& y_n, const T& z_n, const std::function<T(T, T)>& f) {
+inline T RungeKutta4Euler(const double& Δt, const T& γ, const T& ω) {
 
-	T k1 = f(x_n, y_n);
-	T k2 = f(x_n + Δx * 0.5, y_n + Δx * k1 / 2);
-	T k3 = f(x_n + Δx * 0.5, y_n + Δx * k2 / 2);
-	T k4 = f(x_n + Δx, y_n + Δx * k3);
+	T k1 = T(-γ[0] * ω[1] * ω[2],
+			 -γ[1] * ω[0] * ω[2],
+			 -γ[2] * ω[0] * ω[1]);
 
-	return z_n + Δx / 6.0 * (k1 + 2 * k2 + 2 * k3 + k4);
+	T k2 = T(-γ[0] * (ω[1] + 0.5 * Δt * k1[1]) * (ω[2] + 0.5 * Δt * k1[2]),
+			 -γ[1] * (ω[0] + 0.5 * Δt * k1[0]) * (ω[2] + 0.5 * Δt * k1[2]),
+			 -γ[2] * (ω[0] + 0.5 * Δt * k1[0]) * (ω[1] + 0.5 * Δt * k1[1]));
 
-}// T RungeKutta4
+	T k3 = T(-γ[0] * (ω[1] + 0.5 * Δt * k2[1]) * (ω[2] + 0.5 * Δt * k2[2]),
+			 -γ[1] * (ω[0] + 0.5 * Δt * k2[0]) * (ω[2] + 0.5 * Δt * k2[2]),
+			 -γ[2] * (ω[0] + 0.5 * Δt * k2[0]) * (ω[1] + 0.5 * Δt * k2[1]));
+
+	T k4 = T(-γ[0] * (ω[1] + Δt * k3[1]) * (ω[2] + Δt * k3[2]),
+			 -γ[1] * (ω[0] + Δt * k3[0]) * (ω[2] + Δt * k3[2]),
+			 -γ[2] * (ω[0] + Δt * k3[0]) * (ω[1] + Δt * k3[1]));
+
+	return ω + (k1 + k2 * 2 + k3 * 2 + k4) * (Δt / 6.0); // next value of ω.
+
+}// T RungeKutta4Euler
+
 
 /// Semi-Implicit Euler method
 /// t: current time
