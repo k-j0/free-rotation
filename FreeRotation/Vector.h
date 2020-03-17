@@ -20,8 +20,9 @@ public:
 
 	/// Constructor with all initial values
 	/// N values should be passed.
+	/// Variadic params for ease of use - note that the exact type T should be passed ie for T = double, pass double literal (1.0) rather than int literal (1) or float literal (1.0f)
 	inline Vec(T x, ...) {
-		components[0] = x;
+		components[0] = x;// insert first element
 		va_list arguments;
 		va_start(arguments, x);// assuming N arguments are passed
 		for (int comp = 1; comp < N; ++comp) {
@@ -81,7 +82,7 @@ public:
 			set(i, n[i]);
 		}
 		return *this;
-	}
+	}// operator+=
 
 	/// Component-wise product
 	inline Vec<T, N> operator*(const double& f) const {

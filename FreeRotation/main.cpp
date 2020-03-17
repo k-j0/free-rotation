@@ -9,7 +9,7 @@
 
 
 
-/// Vector & matrix type definitions
+/// Vector & matrix type definitions from templated types Vec<T, N> and Mat<T, M, N>
 typedef Vec<double, 3> Vec3; // 3-component Vector
 typedef Vec<double, 3> DiagMat3; // Diagonal 3x3 Matrix; synonym for a Vec3.
 typedef Mat<double, 3, 3> Mat3; // 3x3 square matrix
@@ -36,9 +36,9 @@ const Vec3 Velocity ( 0.0, 0.0, 200.0 ); // meters per second
 const Vec3 AngularVelocity ( 3.0, 1.0, 2.0 ); // radians per second
 
 /// Definition of the step size and time span
-const double t_0 = 0.0;
-const double t_max = 20.0;
-const double h = 0.05; // step size
+const double t_0 = 0.0; // seconds
+const double t_max = 20.0; // seconds
+const double h = 0.05; // step size, seconds
 
 
 
@@ -51,7 +51,7 @@ void insertData(CSVWriter& csv, const double& time, const Vec3& velocity, const 
 	csv.insert(angularVelocity.X()); // angular velocity
 	csv.insert(angularVelocity.Y());
 	csv.insert(angularVelocity.Z());
-	csv.insert(positionP.X());
+	csv.insert(positionP.X()); // position of point P within the shape
 	csv.insert(positionP.Y());
 	csv.insert(positionP.Z());
 }// void insertData
@@ -77,7 +77,7 @@ int main() {
 	Vec3 v = Velocity;
 	Vec3 ω = AngularVelocity;
 	Vec3 a(0.0, 0.0, -g); // constant acceleration
-	Vec3 r_local(0.0, 3.0/4.0 * Radius, 0.0);// position of point P within the cone
+	Vec3 r_local(0.0, 3.0/4.0 * Radius, 0.0);// position of point P within the shape
 
 	// write initial conditions for t = 0 to csv
 	insertData(csv, 0, v, pos, ω, pos + r_local);
@@ -103,13 +103,13 @@ int main() {
 		ω = RungeKutta4Euler(h, γ, ω);
 
 		// Find next position of point P in world-space
-		double Δθ = sqrt(ω.lengthSqr()) * h;
+		double Δθ = sqrt(ω.lengthSqr()) * h; // angle quantity by which the shape rotated since last time step
 		Vec3 axis = ω.normalized();
 		Mat3 Λ = RotationMatrix3(axis, Δθ); // rotation matrix from previous rotation to current rotation
 		r_local = Mult<double, Mat3, 3, 3, Vec3, 3>(Λ, r_local); // get position of P relative to the cone's CM
 		Vec3 r_global = pos + r_local; // add to the center of mass to get position of P in world space.
 
-		// Write results to the csv file
+		// Write results to the csv file as we go
 		insertData(csv, t, v, pos, ω, r_global);
 
 	}// iterative loop

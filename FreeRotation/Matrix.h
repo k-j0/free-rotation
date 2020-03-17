@@ -15,8 +15,9 @@ public:
 	inline Mat() {}
 
 	/// Constructor with full initializers
+	/// variadic notation for ease of declaration (note: should pass the exact type of T - ie. if T = double, pass 1.0 double literal instead of 1 or 1.0f)
 	inline Mat(T m_00, ...) {
-		set(0, 0, m_00);// first element (0,0)
+		set(0, 0, m_00);// insert first element (0,0)
 		va_list arguments;
 		va_start(arguments, m_00);
 		for (int row = 0; row < M; ++row) {
@@ -31,7 +32,7 @@ public:
 
 	/// Getters
 	inline T get(int col, int row) { assert(col < N && row < M); return elements[col][row]; }
-	inline T operator[](int col) { assert(col < N); return elements[col]; }// direct access to each column
+	inline Vec<T, M> operator[](int col) { assert(col < N); return elements[col]; }// direct access to each column as a vector
 
 	/// Setters
 	inline void set(int col, int row, T elem) {
@@ -56,7 +57,9 @@ public:
 
 };// class Mat
 
-/// Matrix multiplication
+
+
+/// Matrix multiplication - Matrix x Matrix
 template<typename T, typename MatLeft, int MLeft, int NLeft, typename MatRight, int MRight, int NRight>
 inline Mat<T, MRight, NLeft> Mult(MatLeft left, MatRight right) {
 	assert(MLeft == NRight);
@@ -74,7 +77,8 @@ inline Mat<T, MRight, NLeft> Mult(MatLeft left, MatRight right) {
 	return result;
 }// Matrix multiplication
 
-/// Matrix multiplication with Vector
+
+/// Matrix multiplication - Matrix x Vector
 template<typename T, typename MatLeft, int MLeft, int NLeft, typename VecRight, int NRight>
 inline Vec<T, NLeft> Mult(MatLeft left, VecRight right) {
 	assert(MLeft == NRight);

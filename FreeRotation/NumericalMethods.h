@@ -9,6 +9,7 @@
 /// γ: moment of inertia parameters
 /// ω: previous angular velocity
 /// Returns the new value of ω after time Δt.
+/// Note: T should be defined as a 3D vector type, although no assumptions are made except a 3-argument constructor & operator[] accessor.
 template<typename T>
 inline T RungeKutta4Euler(const double& Δt, const T& γ, const T& ω) {
 
@@ -46,6 +47,6 @@ inline std::tuple<T, T> SemiImplicitEuler(const double& t, const double& Δt, co
 	T v_next = v_n + a * Δt;
 	T x_next = x_n + v_next * Δt;
 
-	return { v_next, x_next };
+	return { v_next, x_next }; // return both the new velocity and the new position.
 
 }// T SemiImplicitEuler
