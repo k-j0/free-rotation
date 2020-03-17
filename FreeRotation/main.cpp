@@ -86,9 +86,9 @@ int main() {
 	const DiagMat3 I = InertiaTensor;
 
 	// parameters γ for Euler's equations
-	const Vec3 γ ( (I[2] - I[1]) / I[0],  // γ1 = (I_3 - I_2) / I_1
-				   (I[0] - I[2]) / I[1],  // γ2 = (I_1 - I_3) / I_2
-				   (I[1] - I[0]) / I[2] );// γ3 = (I_2 - I_1) / I_3
+	const Vec3 γ ( (I[2] - I[1]) / I[0],   // γ1 = (I_3 - I_2) / I_1
+				   (I[0] - I[2]) / I[1],   // γ2 = (I_1 - I_3) / I_2
+				   (I[1] - I[0]) / I[2] ); // γ3 = (I_2 - I_1) / I_3
 
 	// iterative loop (over an int rather than double for maximum precision)
 	for (int n = 1; n <= (t_max - t_0) / h; ++n) {
@@ -103,11 +103,11 @@ int main() {
 		ω = RungeKutta4Euler(h, γ, ω);
 
 		// Find next position of point P in world-space
-		double Δθ = sqrt(ω.lengthSqr());
+		double Δθ = sqrt(ω.lengthSqr()) * h;
 		Vec3 axis = ω.normalized();
-		Mat3 Λ = RotationMatrix3(axis, Δθ);// rotation matrix from previous rotation to current rotation
-		r_local = Mult<double, Mat3, 3, 3, Vec3, 3>(Λ, r_local);// get position of P relative to the cone's CM
-		Vec3 r_global = pos + r_local;// add to the center of mass to get position of P in world space.
+		Mat3 Λ = RotationMatrix3(axis, Δθ); // rotation matrix from previous rotation to current rotation
+		r_local = Mult<double, Mat3, 3, 3, Vec3, 3>(Λ, r_local); // get position of P relative to the cone's CM
+		Vec3 r_global = pos + r_local; // add to the center of mass to get position of P in world space.
 
 		// Write results to the csv file
 		insertData(csv, t, v, pos, ω, r_global);
